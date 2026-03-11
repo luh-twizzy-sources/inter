@@ -63,10 +63,26 @@ jobs:
             db_name: auth
             db_schema: auth_schema
             build_tool: maven
+            env_db_url: jdbc:postgresql://localhost:5432/auth
+            env_db_username: postgres
+            env_db_password: postgres
+            env_server_port: 8081
+            env_user_service_url: http://localhost:8080
+            env_jwt_secret: test_jwt_secret_change_me_please
+            env_jwt_access_token_expiration: 3600000
+            env_jwt_refresh_token_expiration: 2592000000
           - service: user-service
             db_name: internship
             db_schema: user_schema
             build_tool: maven
+            env_db_url: jdbc:postgresql://localhost:5432/internship
+            env_db_username: postgres
+            env_db_password: postgres
+            env_server_port: 8080
+            env_redis_host: localhost
+            env_redis_port: 6379
+            env_redis_password: ""
+            env_redis_database: 0
           - service: order-service
             db_name: order_db
             db_schema: order_schema
@@ -153,6 +169,19 @@ jobs:
 
       - name: Run tests with JaCoCo
         if: matrix.service == 'user-service' || matrix.service == 'auth-service'
+        env:
+          DB_URL: ${{ matrix.env_db_url }}
+          DB_USERNAME: ${{ matrix.env_db_username }}
+          DB_PASSWORD: ${{ matrix.env_db_password }}
+          SERVER_PORT: ${{ matrix.env_server_port }}
+          USER_SERVICE_URL: ${{ matrix.env_user_service_url }}
+          JWT_SECRET: ${{ matrix.env_jwt_secret }}
+          JWT_ACCESS_TOKEN_EXPIRATION: ${{ matrix.env_jwt_access_token_expiration }}
+          JWT_REFRESH_TOKEN_EXPIRATION: ${{ matrix.env_jwt_refresh_token_expiration }}
+          REDIS_HOST: ${{ matrix.env_redis_host }}
+          REDIS_PORT: ${{ matrix.env_redis_port }}
+          REDIS_PASSWORD: ${{ matrix.env_redis_password }}
+          REDIS_DATABASE: ${{ matrix.env_redis_database }}
         run: |
           cd ${{ matrix.service }}
           if [ "${{ matrix.build_tool }}" = "maven" ]; then
