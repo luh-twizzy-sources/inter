@@ -223,6 +223,22 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build all services (compile only)
+        run: |
+          mvn -q -f api-gateway/pom.xml -DskipTests compile
+          mvn -q -f auth-service/pom.xml -DskipTests compile
+          mvn -q -f user-service/pom.xml -DskipTests compile
+          mvn -q -f payment-service/pom.xml -DskipTests compile
+          cd order-service
+          chmod +x ./gradlew
+          ./gradlew -q classes -x test
+
       - name: SonarCloud Scan (whole repo)
         uses: sonarsource/sonarcloud-github-action@v2
         env:
@@ -237,6 +253,7 @@ jobs:
             -Dsonar.exclusions=**/target/**,**/build/**,**/.gradle/**,**/.mvn/**,**/node_modules/**,**/observability/**
             -Dsonar.tests=.
             -Dsonar.test.inclusions=**/*Test.java,**/*Tests.java,**/*IT.java,**/*IntegrationTest.java
+            -Dsonar.java.binaries=**/target/classes,**/build/classes/java/main
 
   docker-build:
     name: Artifact Creation
