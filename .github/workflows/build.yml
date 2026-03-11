@@ -223,41 +223,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      - name: Build services for Sonar
-        run: |
-          cd user-service && mvn clean verify -DskipTests
-          cd ../auth-service && mvn clean verify -DskipTests
-
-      - name: SonarQube Analysis
+      - name: SonarCloud Scan (whole repo)
+        uses: sonarsource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          cd user-service
-          mvn sonar:sonar \
-            -Dsonar.organization=luh-twizzy-sources \
-            -Dsonar.projectKey=luh-twizzy-sources_inter \
-            -Dsonar.projectName='User Service' \
-            -Dsonar.qualitygate.wait=false \
-            -Dsonar.issue.ignore.multicriteria=e1 \
-            -Dsonar.issue.ignore.multicriteria.e1.ruleKey=squid:S00116 \
-            -Dsonar.issue.ignore.multicriteria.e1.resourceKey=**/*
-          
-          cd ../auth-service
-          mvn sonar:sonar \
-            -Dsonar.organization=luh-twizzy-sources \
-            -Dsonar.projectKey=luh-twizzy-sources_inter \
-            -Dsonar.projectName='Auth Service' \
-            -Dsonar.qualitygate.wait=false \
-            -Dsonar.issue.ignore.multicriteria=e1 \
-            -Dsonar.issue.ignore.multicriteria.e1.ruleKey=squid:S00116 \
-            -Dsonar.issue.ignore.multicriteria.e1.resourceKey=**/*
+        with:
+          args: >
+            -Dsonar.organization=luh-twizzy-sources
+            -Dsonar.projectKey=luh-twizzy-sources_inter
+            -Dsonar.projectName=inter
+            -Dsonar.sources=.
+            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.exclusions=**/target/**,**/build/**,**/.gradle/**,**/.mvn/**,**/node_modules/**,**/observability/**
+            -Dsonar.tests=.
+            -Dsonar.test.inclusions=**/*Test.java,**/*Tests.java,**/*IT.java,**/*IntegrationTest.java
 
   docker-build:
     name: Artifact Creation
