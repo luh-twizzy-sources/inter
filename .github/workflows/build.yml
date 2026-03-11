@@ -241,8 +241,8 @@ jobs:
         run: |
           cd user-service
           mvn sonar:sonar \
-            -Dsonar.organization=kless31332 \
-            -Dsonar.projectKey=kless3_internship \
+            -Dsonar.organization=luh-twizzy-sources \
+            -Dsonar.projectKey=luh-twizzy-sources_inter \
             -Dsonar.projectName='User Service' \
             -Dsonar.qualitygate.wait=false \
             -Dsonar.issue.ignore.multicriteria=e1 \
@@ -251,8 +251,8 @@ jobs:
           
           cd ../auth-service
           mvn sonar:sonar \
-            -Dsonar.organization=kless31332 \
-            -Dsonar.projectKey=kless3_internship \
+            -Dsonar.organization=luh-twizzy-sources \
+            -Dsonar.projectKey=luh-twizzy-sources_inter \
             -Dsonar.projectName='Auth Service' \
             -Dsonar.qualitygate.wait=false \
             -Dsonar.issue.ignore.multicriteria=e1 \
